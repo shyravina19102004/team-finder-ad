@@ -17,7 +17,6 @@
         </div>
     </div>
 
-<<<<<<< HEAD
     {% if all_skills %}
         <div class="participants-filter">
             <span class="filter-label">Навыки:</span>
@@ -37,8 +36,6 @@
         </div>
     {% endif %}
 
-=======
->>>>>>> 4e5422aae3382a86db5ad8c67f60db6d95aab449
     {% if request.user.is_authenticated %}
         <div class="participants-filter">
             <span class="filter-label">Фильтры пользователей:</span>
@@ -89,7 +86,6 @@
         </div>
         {% endfor %}
     </div>
-<<<<<<< HEAD
 
     {% if page_obj.has_other_pages %}
     <div class="pagination">
@@ -110,8 +106,6 @@
         {% endif %}
     </div>
     {% endif %}
-=======
->>>>>>> 4e5422aae3382a86db5ad8c67f60db6d95aab449
     {% else %}
     {% include 'includes/empty-project-card.html' with empty_title="Пока нет участников" empty_message="Попробуйте сбросить фильтр" button_link="/users/list" button_text="Сбросить" %}
     {% endif %}
