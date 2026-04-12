@@ -11,7 +11,11 @@
 {% block content %}
 <div class="profile-edit-container">
     <h2 class="form-title">Редактирование профиля</h2>
+<<<<<<< HEAD
     <form method="post" enctype="multipart/form-data" class="profile-edit-form" id="profile-edit-form">
+=======
+    <form method="post" enctype="multipart/form-data" class="profile-edit-form">
+>>>>>>> 4e5422aae3382a86db5ad8c67f60db6d95aab449
         {% csrf_token %}
 
         <div class="avatar-upload">
@@ -66,11 +70,16 @@
         {% endif %}
 
         <div class="form-actions">
+<<<<<<< HEAD
             <a href="{% url 'users:user_details' pk=request.user.pk %}" class="cancel-button">Отмена</a>
+=======
+            <a href="/users/{{ user.id }}" class="cancel-button">Отмена</a>
+>>>>>>> 4e5422aae3382a86db5ad8c67f60db6d95aab449
             <button type="submit" class="save-button">Сохранить</button>
         </div>
     </form>
 </div>
+<<<<<<< HEAD
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -85,4 +94,6 @@
         }
     });
 </script>
+=======
+>>>>>>> 4e5422aae3382a86db5ad8c67f60db6d95aab449
 {% endblock %}

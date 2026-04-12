@@ -46,7 +46,11 @@
                 {% include 'includes/svg/share.html' %}
             </a>
             {% if request.user.id == user.id %}
+<<<<<<< HEAD
             <a href="{% url 'users:edit_profile' %}" class="black-button">
+=======
+            <a href="/users/edit-profile" class="black-button">
+>>>>>>> 4e5422aae3382a86db5ad8c67f60db6d95aab449
                 {% include 'includes/svg/pen.html' %}
                 Редактировать
             </a>
@@ -58,6 +62,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <h3>Навыки</h3>
     <div id="skills-section" class="skills-section">
         {% if request.user.id == user.id %}
@@ -87,6 +92,8 @@
         {% endif %}
     </div>
 
+=======
+>>>>>>> 4e5422aae3382a86db5ad8c67f60db6d95aab449
     <h3>Проекты ({{ user.owned_projects.all|length }})</h3>
 
     <div class="collapsed-project-grid">
