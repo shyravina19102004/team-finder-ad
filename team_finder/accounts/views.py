@@ -7,18 +7,10 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from team_finder.constants import (
-    PAGINATE_PER_PAGE,
-    SKILLS_AUTOCOMPLETE_LIMIT,
-)
+from team_finder.constants import PAGINATE_PER_PAGE, SKILLS_AUTOCOMPLETE_LIMIT
 from team_finder.service import paginate
 
-from .forms import (
-    ChangePasswordForm,
-    EditProfileForm,
-    LoginForm,
-    RegisterForm,
-)
+from .forms import ChangePasswordForm, EditProfileForm, LoginForm, RegisterForm
 from .models import Skill, User
 
 
@@ -68,9 +60,7 @@ def change_password_view(request):
     if form.is_valid():
         form.save()
         return redirect("users:user_details", pk=request.user.pk)
-    return render(
-        request, "users/change_password.html", {"form": form}
-    )
+    return render(request, "users/change_password.html", {"form": form})
 
 
 @login_required
@@ -118,12 +108,12 @@ def skills_autocomplete(request):
     if request.method != "GET":
         return JsonResponse([], safe=False)
 
-    q = request.GET.get("q", "").strip()
-    if not q:
+    query = request.GET.get("q", "").strip()
+    if not query:
         return JsonResponse([], safe=False)
 
     skills = list(
-        Skill.objects.filter(name__istartswith=q)
+        Skill.objects.filter(name__istartswith=query)
         .order_by("name")
         .values("id", "name")[:SKILLS_AUTOCOMPLETE_LIMIT]
     )

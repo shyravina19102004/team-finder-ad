@@ -1,9 +1,12 @@
 """Вспомогательные функции для приложений."""
 
 import re
+from urllib.parse import urlparse
 
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
+from django.core.validators import URLValidator
+from django.core.validators import ValidationError as DjangoValidationError
 
 from team_finder.constants import (
     PAGINATE_PER_PAGE,
@@ -13,6 +16,9 @@ from team_finder.constants import (
     PHONE_FORMATTED_PREFIX,
     PHONE_VALIDATION_MESSAGE,
 )
+
+# Константа для допустимых доменов GitHub (легко расширяется)
+GITHUB_DOMAINS = ("github.com", "www.github.com")
 
 
 def paginate(request, queryset, per_page: int = PAGINATE_PER_PAGE):
@@ -55,3 +61,38 @@ def normalize_phone(value: str) -> str:
 
 def normalize_phone_for_comparison(value: str) -> str | None:
     return normalize_phone(value) if value else None
+
+
+def validate_github_url(value: str) -> str:
+    """Базовая валидация URL GitHub: проверка формата и домена."""
+    if not value:
+        return value
+
+    url_validator = URLValidator()
+    try:
+        url_validator(value)
+    except DjangoValidationError:
+        raise ValidationError("Введите корректную ссылку")
+
+    parsed = urlparse(value)
+    host = (parsed.netloc or "").lower().lstrip("www.")
+    if host not in GITHUB_DOMAINS and not host.endswith(".github.com"):
+        allowed = ", ".join(GITHUB_DOMAINS)
+        raise ValidationError(f"Ссылка должна вести на {allowed}")
+    return value
+
+
+def validate_github_repo_url(value: str) -> str:
+    """Валидация URL репозитория GitHub: проверка формата, домена и наличия пути user/repo."""
+    value = validate_github_url(value)
+    if not value:
+        return value
+
+    parsed = urlparse(value)
+    path_parts = [p for p in parsed.path.split("/") if p]
+    if len(path_parts) < 2:
+        raise ValidationError(
+            "Ссылка должна указывать на конкретный репозиторий GitHub "
+            "(формат: https://github.com/user/repo)."
+        )
+    return value

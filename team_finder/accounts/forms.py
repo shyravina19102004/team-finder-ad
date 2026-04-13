@@ -1,17 +1,11 @@
-from urllib.parse import urlparse
-
 from django import forms
 from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError as DjangoValidationError
-from django.core.validators import URLValidator
 
-from team_finder.constants import (
-    USER_NAME_MAX_LENGTH,
-    USER_SURNAME_MAX_LENGTH
-)
+from team_finder.constants import USER_NAME_MAX_LENGTH, USER_SURNAME_MAX_LENGTH
 from team_finder.service import (
     normalize_phone,
-    normalize_phone_for_comparison
+    normalize_phone_for_comparison,
+    validate_github_url,
 )
 
 from .models import User
@@ -49,10 +43,7 @@ class ChangePasswordForm(forms.Form):
 
     def clean_old_password(self):
         current_password = self.cleaned_data.get("old_password")
-        if (
-            current_password
-            and not self.user.check_password(current_password)
-        ):
+        if current_password and not self.user.check_password(current_password):
             raise forms.ValidationError("Неверный текущий пароль")
         return current_password
 
@@ -60,11 +51,7 @@ class ChangePasswordForm(forms.Form):
         super().clean()
         new_password = self.cleaned_data.get("new_password1")
         new_password_confirmation = self.cleaned_data.get("new_password2")
-        if (
-            new_password 
-            and new_password_confirmation 
-            and new_password != new_password_confirmation
-        ):
+        if new_password and new_password_confirmation and new_password != new_password_confirmation:
             self.add_error("new_password2", "Пароли не совпадают")
 
     def clean_new_password1(self):
@@ -104,25 +91,8 @@ class EditProfileForm(forms.ModelForm):
         for user in User.objects.exclude(pk=exclude_pk):
             if normalize_phone_for_comparison(user.phone) == normalized:
                 raise forms.ValidationError("Этот номер телефона уже занят")
-
         return normalized
 
     def clean_github_url(self):
         value = self.cleaned_data.get("github_url", "").strip()
-        if not value:
-            return value
-
-        # Валидная ссылка
-        url_validator = URLValidator()
-        try:
-            url_validator(value)
-        except DjangoValidationError:
-            raise forms.ValidationError("Введите корректную ссылку")
-
-        # Домен — github.com
-        parsed = urlparse(value)
-        host = (parsed.netloc or "").lower().lstrip("www.")
-        if host != "github.com" and not host.endswith(".github.com"):
-            raise forms.ValidationError("Ссылка должна вести на github.com")
-
-        return value
+        return validate_github_url(value)

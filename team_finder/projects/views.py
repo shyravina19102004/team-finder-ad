@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
@@ -19,12 +20,10 @@ def edit_project(request, project_id: int):
         return HttpResponseForbidden(
             "Доступ запрещён. Только автор проекта может его редактировать."
         )
-
     form = ProjectForm(request.POST or None, instance=project)
     if form.is_valid():
         form.save()
         return redirect("projects:project_detail", project_id=project.pk)
-
     return render(
         request,
         "projects/create-project.html",
@@ -58,13 +57,11 @@ def project_detail(request, project_id: int):
 
 
 def project_list(request):
-    projects_qs = Project.objects.all().order_by("-created_at")
-    pagination_context = paginate(
-        request,
-        projects_qs,
-        per_page=PAGINATE_PER_PAGE
-    )
-
+    # Оптимизация: подгружаем автора и количество участников
+    projects_qs = Project.objects.select_related("owner").annotate(
+        participants_count=Count("participants")
+    ).order_by("-created_at")
+    pagination_context = paginate(request, projects_qs, per_page=PAGINATE_PER_PAGE)
     return render(
         request,
         "projects/project_list.html",
@@ -80,12 +77,10 @@ def project_list(request):
 def toggle_participate(request, project_id: int):
     project = get_object_or_404(Project, pk=project_id)
     user = request.user
-
     if project.participants.filter(pk=user.pk).exists():
         project.participants.remove(user)
     else:
         project.participants.add(user)
-
     return JsonResponse({"status": "ok"})
 
 
@@ -93,20 +88,16 @@ def toggle_participate(request, project_id: int):
 @require_POST
 def complete_project(request, project_id: int):
     project = get_object_or_404(Project, pk=project_id)
-
     if project.owner_id != request.user.pk:
         return JsonResponse(
             {"error": "Only project owner can complete it"},
             status=HTTPStatus.FORBIDDEN
         )
-
     if project.status != Project.STATUS_OPEN:
         return JsonResponse(
             {"error": "Project is already closed"},
             status=HTTPStatus.BAD_REQUEST
         )
-
     project.status = Project.STATUS_CLOSED
     project.save()
-
     return JsonResponse({"status": "ok", "project_status": "closed"})

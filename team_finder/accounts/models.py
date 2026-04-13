@@ -1,4 +1,3 @@
-import platform
 import random
 import uuid
 from enum import StrEnum
@@ -12,6 +11,9 @@ from PIL import Image, ImageDraw, ImageFont
 from team_finder.constants import (
     AVATAR_SIZE,
     AVATAR_TEXT_COLOR,
+    AVATAR_TEXT_OFFSET_X,
+    AVATAR_TEXT_OFFSET_Y,
+    FONT_PATHS,
     SKILL_NAME_MAX_LENGTH,
     USER_ABOUT_MAX_LENGTH,
     USER_NAME_MAX_LENGTH,
@@ -85,16 +87,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         super().save(*args, **kwargs)
 
     def _get_avatar_font(self):
-        """Загружает шрифт для аватарки (кросс-платформенно)."""
-        font_paths = [
-            "arial.ttf",
-            "Arial.ttf",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
-        ]
-        if platform.system() == "Windows":
-            font_paths.insert(1, "C:\\Windows\\Fonts\\arial.ttf")
-        for path in font_paths:
+        """Загружает шрифт для аватарки, используя константу FONT_PATHS."""
+        for path in FONT_PATHS:
             try:
                 return ImageFont.truetype(path, 72)
             except OSError:
@@ -116,8 +110,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         bbox = draw.textbbox((0, 0), letter, font=font)
         text_width = bbox[2] - bbox[0]
         text_height = bbox[3] - bbox[1]
-        x = (AVATAR_SIZE[0] - text_width) // 2
-        y = (AVATAR_SIZE[1] - text_height) // 2 - 5
+        x = (AVATAR_SIZE[0] - text_width) // 2 + AVATAR_TEXT_OFFSET_X
+        y = (AVATAR_SIZE[1] - text_height) // 2 + AVATAR_TEXT_OFFSET_Y
 
         draw.text((x, y), letter, fill=AVATAR_TEXT_COLOR, font=font)
 

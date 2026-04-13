@@ -1,18 +1,14 @@
 from pathlib import Path
 from decouple import config
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config("DJANGO_SECRET_KEY")
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS из переменной окружения, формат: "localhost,127.0.0.1,.example.com"
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1").split(",")
 
-# Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -51,13 +47,13 @@ TEMPLATES = [
     },
 ]
 
-# Database – SQLite (для быстрого локального запуска)
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
 AUTH_PASSWORD_VALIDATORS = []
 if not DEBUG:
     AUTH_PASSWORD_VALIDATORS.extend(
@@ -77,22 +73,20 @@ if not DEBUG:
         ]
     )
 
-# Internationalization
 LANGUAGE_CODE = "ru-RU"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-# Media files (загруженные аватары)
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Пользовательская модель (задана в accounts/models.py)
 AUTH_USER_MODEL = "accounts.User"
+
+# URL для перенаправления неавторизованных пользователей
+LOGIN_URL = "/users/login/"
