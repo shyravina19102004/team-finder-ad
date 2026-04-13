@@ -1,5 +1,4 @@
 # TeamFinder
-# TeamFinder
 
 ## О проекте
 
