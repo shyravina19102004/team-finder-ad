@@ -9,9 +9,8 @@ from django.views.decorators.http import require_POST
 
 from team_finder.constants import PAGINATE_PER_PAGE, SKILLS_AUTOCOMPLETE_LIMIT
 from team_finder.service import paginate
-
-from .forms import ChangePasswordForm, EditProfileForm, LoginForm, RegisterForm
-from .models import Skill, User
+from team_finder.accounts.forms import ChangePasswordForm, EditProfileForm, LoginForm, RegisterForm
+from team_finder.accounts.models import Skill, User
 
 
 def user_details(request, pk):
@@ -122,7 +121,6 @@ def skills_autocomplete(request):
 
 @require_POST
 def add_skill_to_user(request, user_id: int):
-    """Добавление навыка пользователю."""
     if not request.user.is_authenticated:
         return JsonResponse(
             {"error": "Forbidden"},
@@ -215,7 +213,6 @@ def add_skill_to_user(request, user_id: int):
 
 @require_POST
 def remove_skill_from_user(request, user_id: int, skill_id: int):
-    """Удаление навыка у пользователя."""
     if not request.user.is_authenticated:
         return JsonResponse(
             {"error": "Forbidden"},

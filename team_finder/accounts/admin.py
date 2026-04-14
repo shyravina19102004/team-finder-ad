@@ -49,8 +49,8 @@ class UserAdmin(BaseUserAdmin):
         ),
     )
 
+    @admin.display(description="Аватар")
     def avatar_preview(self, obj):
         if obj.avatar:
             return format_html('<img src="{}" width="50" height="50" style="border-radius:50%;" />', obj.avatar.url)
         return "—"
-    avatar_preview.short_description = "Аватар"

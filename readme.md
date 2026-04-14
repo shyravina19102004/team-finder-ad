@@ -83,7 +83,6 @@ cp .env_example .env
 | `POSTGRES_PASSWORD` | Пароль пользователя |
 | `POSTGRES_HOST` | Хост БД (обычно `localhost`) |
 | `POSTGRES_PORT` | Порт PostgreSQL (по умолчанию `5432`) |
-| `TASK_VERSION` | Вариант шаблонов: `1`, `2` или `3` (папки `templates_var1`, `templates_var2`, `templates_var3`) |
 
 ### 4. База данных PostgreSQL
 
@@ -126,3 +125,4 @@ python manage.py runserver --settings=team_finder.settings_local
 
 ### Автор
 Шуравина Оксана
+https://github.com/shyravina19102004

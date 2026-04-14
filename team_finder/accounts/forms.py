@@ -7,8 +7,7 @@ from team_finder.service import (
     normalize_phone_for_comparison,
     validate_github_url,
 )
-
-from .models import User
+from team_finder.accounts.models import User
 
 
 class LoginForm(forms.Form):
@@ -86,7 +85,6 @@ class EditProfileForm(forms.ModelForm):
         value = self.cleaned_data.get("phone", "").strip()
         normalized = normalize_phone(value)
 
-        # Уникальность: 8... и +7... считаются одинаковыми
         exclude_pk = self.instance.pk if self.instance else None
         for user in User.objects.exclude(pk=exclude_pk):
             if normalize_phone_for_comparison(user.phone) == normalized:

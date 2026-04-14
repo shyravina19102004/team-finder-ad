@@ -19,22 +19,28 @@ PHONE_FORMATTED_PREFIX = "+7"
 PHONE_VALIDATION_MESSAGE = "Формат: 8XXXXXXXXXX или +7XXXXXXXXXX (X — цифры)"
 USER_ABOUT_MAX_LENGTH = 256
 
+# базовая директория для шрифтов (может быть изменена)
+FONTS_BASE_DIR = "/usr/share/fonts/truetype/"
 # шрифты для аватарки (кросс-платформенные пути)
 FONT_PATHS = [
     "arial.ttf",
     "Arial.ttf",
-    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+    FONTS_BASE_DIR + "dejavu/DejaVuSans.ttf",
+    FONTS_BASE_DIR + "liberation/LiberationSans-Regular.ttf",
     "C:\\Windows\\Fonts\\arial.ttf",  # Windows
 ]
 
 # смещение текста аватарки (для тонкой настройки)
 AVATAR_TEXT_OFFSET_X = 0
 AVATAR_TEXT_OFFSET_Y = -5
+# координаты якоря для текста
+AVATAR_ANCHOR_POINT = (0, 0)
 
 # projects
 PROJECT_NAME_MAX_LENGTH = 200
 PROJECT_STATUS_MAX_LENGTH = 6
+PROJECT_STATUS_OPEN = "open"
+PROJECT_STATUS_CLOSED = "closed"
 
 # pagination
 PAGINATE_PER_PAGE = 12

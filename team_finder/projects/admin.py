@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.db.models import Count
+from django.utils.html import format_html
 
 from .models import Project
 
@@ -11,14 +12,12 @@ class ProjectAdmin(admin.ModelAdmin):
     search_fields = ("name", "description")
     filter_horizontal = ("participants",)
     readonly_fields = ("created_at",)
-    list_editable = ("status",)  # возможность менять статус прямо в списке
-
-    def participants_count(self, obj):
-        return obj.participants_count
-    participants_count.short_description = "Участников"
-    participants_count.admin_order_field = "participants_count"
+    list_editable = ("status",)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        # Аннотируем количество участников для оптимизации
         return queryset.annotate(participants_count=Count("participants"))
+
+    @admin.display(description="Участников", ordering="participants_count")
+    def participants_count(self, obj):
+        return obj.participants_count

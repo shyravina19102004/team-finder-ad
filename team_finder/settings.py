@@ -6,7 +6,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("DJANGO_SECRET_KEY")
 DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
 
-# ALLOWED_HOSTS из переменной окружения, формат: "localhost,127.0.0.1,.example.com"
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1").split(",")
 
 INSTALLED_APPS = [
@@ -35,7 +34,7 @@ ROOT_URLCONF = "team_finder.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / f"templates_var{config('TASK_VERSION', default='2')}"],
+        "DIRS": [BASE_DIR / "templates_var2"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -88,5 +87,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.User"
 
-# URL для перенаправления неавторизованных пользователей
-LOGIN_URL = "/users/login/"
+LOGIN_URL = "users:login"

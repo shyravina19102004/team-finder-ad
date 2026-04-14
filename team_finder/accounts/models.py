@@ -13,6 +13,7 @@ from team_finder.constants import (
     AVATAR_TEXT_COLOR,
     AVATAR_TEXT_OFFSET_X,
     AVATAR_TEXT_OFFSET_Y,
+    AVATAR_ANCHOR_POINT,
     FONT_PATHS,
     SKILL_NAME_MAX_LENGTH,
     USER_ABOUT_MAX_LENGTH,
@@ -25,8 +26,6 @@ from .managers import UserManager
 
 
 class AvatarBackgroundColor(StrEnum):
-    """Палитра приглушённых цветов фона аватарки."""
-
     SOFT_BLUE = "#B8D4E3"
     SOFT_PURPLE = "#D4B8E3"
     SOFT_GREEN = "#B8E3D4"
@@ -87,7 +86,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         super().save(*args, **kwargs)
 
     def _get_avatar_font(self):
-        """Загружает шрифт для аватарки, используя константу FONT_PATHS."""
         for path in FONT_PATHS:
             try:
                 return ImageFont.truetype(path, 72)
@@ -96,7 +94,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         return ImageFont.load_default()
 
     def _generate_avatar(self):
-        """Генерирует аватарку с первой буквой имени на однотонном фоне."""
         letter = self.name[0].upper() if self.name else "?"
 
         img = Image.new(
@@ -107,7 +104,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         draw = ImageDraw.Draw(img)
         font = self._get_avatar_font()
 
-        bbox = draw.textbbox((0, 0), letter, font=font)
+        bbox = draw.textbbox(AVATAR_ANCHOR_POINT, letter, font=font)
         text_width = bbox[2] - bbox[0]
         text_height = bbox[3] - bbox[1]
         x = (AVATAR_SIZE[0] - text_width) // 2 + AVATAR_TEXT_OFFSET_X

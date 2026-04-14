@@ -6,7 +6,11 @@ from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from team_finder.constants import PAGINATE_PER_PAGE
+from team_finder.constants import (
+    PAGINATE_PER_PAGE,
+    PROJECT_STATUS_CLOSED,
+    PROJECT_STATUS_OPEN,
+)
 from team_finder.service import paginate
 
 from .forms import ProjectForm
@@ -57,7 +61,6 @@ def project_detail(request, project_id: int):
 
 
 def project_list(request):
-    # Оптимизация: подгружаем автора и количество участников
     projects_qs = Project.objects.select_related("owner").annotate(
         participants_count=Count("participants")
     ).order_by("-created_at")
@@ -93,11 +96,11 @@ def complete_project(request, project_id: int):
             {"error": "Only project owner can complete it"},
             status=HTTPStatus.FORBIDDEN
         )
-    if project.status != Project.STATUS_OPEN:
+    if project.status != PROJECT_STATUS_OPEN:
         return JsonResponse(
             {"error": "Project is already closed"},
             status=HTTPStatus.BAD_REQUEST
         )
-    project.status = Project.STATUS_CLOSED
+    project.status = PROJECT_STATUS_CLOSED
     project.save()
-    return JsonResponse({"status": "ok", "project_status": "closed"})
+    return JsonResponse({"status": "ok", "project_status": PROJECT_STATUS_CLOSED})
